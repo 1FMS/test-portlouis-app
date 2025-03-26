@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Lista de contatos</h1>
+
+        <h2>Adicionar Usuário</h2>
+        <input v-model="newContato.nome" placeholder="Nome">
+        <input v-model="newContato.telefone" placeholder="Telefone">
+        <button @click="addContato">Adicionar</button>
+
+        <ul>
+            <li v-for="contato in contatos" :key="contato.id">{{ contato.nome }} - {{ contato.telefone }}</li>
+        </ul>
+
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const contatos = ref([]);
+                const newContato = ref({ nome: "", telefone: "" });
+
+                const fetchContatos = async () => {
+                    try {
+                        const response = await fetch("http://localhost:3000/api/contatos");
+                        contatos.value = await response.json();
+                    } catch (error) {
+                        console.error("Erro ao buscar contatos");
+                    }
+                };
+
+                const addContato = async () => {
+                    if (!newContato.value.nome || !newContato.value.telefone) {
+                        alert("Preencha todos os campos!");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch("http://localhost:3000/api/contatos", {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json" 
+                            },
+                            body: JSON.stringify({
+                                nome: newContato.value.nome,
+                                telefone: newContato.value.telefone
+                            })
+                        });
+
+                        if (!response.ok) throw new Error("Erro ao adicionar usuário");
+                        fetchContatos();
+                        newContato.value = { nome: "", telefone: "" };
+                    } catch (error) {
+                        console.error("Erro ao adicionar contato");
+                        alert("Erro ao adicionar contato");
+                    }
+                };
+                onMounted(fetchContatos);
+
+                return { contatos, newContato, addContato };
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
