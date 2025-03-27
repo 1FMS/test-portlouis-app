@@ -3,70 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste</title>
+    <title>Lista de Contatos</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
+
+<style>
+    #app{
+        display: flex;
+        flex-direction: column;
+    }
+    #top{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #adb5bd;
+        padding: 0 10vw;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);;
+    }
+    #mid{
+        display: flex;
+        margin: 1rem 10vw;
+    }
+    #bt-create{
+        width: 150px;
+        height: 50px;
+    }
+    table{
+        height: 100%;
+        width: 80vw;
+    }
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    td{
+        text-align: center;
+        padding: 5px;
+    }
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        width: 300px;
+    }
+    
+    .modal-content input {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+    
+    .modal-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+    
+    
+    .ddd-11 {
+        background-color: #e6f2ff;
+    }
+    
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: -8px;
+        margin-bottom: 5px;
+    }
+    
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    body{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        margin: 0;
+    }
+
+    #bt-create{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: #0d6efd;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        border: none;
+    }
+    
+    #bt-create:hover{
+        background-color: #0e60da;
+    }
+
+    #bt-search{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: #0d6efd;
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        border: none;
+        margin-left: 10px;
+    }
+
+    #bt-search:hover{
+        background-color: #0e60da;
+    }
+
+    input{
+        font-size: 1rem;
+        border-radius: 0.375rem;
+        border-width: 1px;
+        padding: .375rem .75rem;
+        width: 20vw;
+    }
+
+    #tabela{
+        display: flex;
+        justify-content: center;
+    }
+
+    #bt-delete{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: #dc3545;
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        border: none;
+        margin-left: 10px;
+        padding: 5px 7px;
+        
+    }
+    #bt-delete:hover{
+        background-color: #c2303e;
+    }
+
+    #bt-editar{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: #0d6efd;
+        color: white;
+        font-size: 1rem;
+        font-weight: 400;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        border: none;
+        margin-left: 10px;
+        padding: 5px 7px;
+    }
+    #bt-editar:hover{
+        background-color: #0e60da;
+    }
+
+    #bt-cancelar{
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: #adb5bd;
+        color: black;
+        font-size: 1rem;
+        font-weight: 400;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        border: none;
+        padding: 5px 7px;
+    }
+    #bt-cancelar:hover{
+        background-color: #999fa5;
+    }
+
+
+</style>
+    
 <body>
     <div id="app">
-        <h1>Lista de contatos</h1>
-
-        <h2>Adicionar Usuário</h2>
-        <input v-model="newContato.nome" placeholder="Nome">
-        <input v-model="newContato.telefone" placeholder="Telefone">
-        <button @click="addContato">Adicionar</button>
-
-        <ul>
-            <li v-for="contato in contatos" :key="contato.id">{{ contato.nome }} - {{ contato.telefone }}</li>
-        </ul>
-
+        <div id="top">
+            <h2>Lista de contatos</h2>
+            <button id="bt-create" @click="openModal()">Criar contato</button>
+        </div>
+        <div id="mid">
+            <input 
+                type="search" 
+                v-model="searchTerm" 
+                placeholder="Buscar por nome"
+                @keyup.enter="searchContatos">
+            <button id="bt-search" @click="searchContatos">Buscar</button>
+        </div>
+        <div id="tabela">
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Ações</th>
+                </tr>
+                <tr v-for="contato in contatos" :key="contato.id" :class="{ 'ddd-11': isDDD11(contato.telefone) }">
+                    <td>{{ contato.nome }}</td>
+                    <td>{{ contato.telefone }}</td>
+                    <td>
+                        <button @click="openModal(contato)" id="bt-editar">Editar</button>
+                        <button @click="deleteContato(contato.id)" id="bt-delete">Deletar</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="modal" v-if="showModal">
+            <div class="modal-content">
+                <h2>{{ isEditing ? 'Editar Contato' : 'Adicionar Contato' }}</h2>
+                <input v-model="currentContato.nome" placeholder="Nome" @input="validateNome">
+                <div v-if="nomeError" class="error-message">{{ nomeError }}</div>
+                
+                <input v-model="currentContato.telefone" 
+                       placeholder="Telefone" 
+                       @input="formatarTelefone">
+                <div v-if="telefoneError" class="error-message">{{ telefoneError }}</div>
+                
+                <div class="modal-actions">
+                    <button id="bt-cancelar" @click="showModal = false">Cancelar</button>
+                    <button id="bt-editar" @click="isEditing ? updateContato() : addContato()" 
+                            :disabled="!formIsValid">
+                        {{ isEditing ? 'Atualizar' : 'Adicionar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
 
         createApp({
             setup() {
                 const contatos = ref([]);
-                const newContato = ref({ nome: "", telefone: "" });
+                const searchTerm = ref("");
+                const originalContatos = ref([]);
+                const showModal = ref(false);
+                const isEditing = ref(false);
+                const currentContato = ref({ 
+                    id: null,
+                    nome: "", 
+                    telefone: "" 
+                });
+                const nomeError = ref("");
+                const telefoneError = ref("");
+
+                const formIsValid = computed(() => {
+                    return currentContato.value.nome && 
+                           currentContato.value.telefone && 
+                           !nomeError.value && 
+                           !telefoneError.value;
+                });
+
+                const isDDD11 = (telefone) => {
+                    return telefone.startsWith('(11)');
+                };
+
+                const validateNome = () => {
+                    const nome = currentContato.value.nome.trim();
+                    const palavras = nome.split(/\s+/).filter(p => p.length > 0);
+                    
+                    if (palavras.length < 2) {
+                        nomeError.value = "O nome deve conter pelo menos duas palavras";
+                        return false;
+                    }
+                    
+                    if (palavras.some(p => p.length < 3)) {
+                        nomeError.value = "Cada palavra deve ter pelo menos 3 letras";
+                        return false;
+                    }
+                    
+                    nomeError.value = "";
+                    return true;
+                };
+
+                const formatarTelefone = (event) => {
+                let value = event.target.value.replace(/\D/g, '');
+                
+                
+                if (value.length > 2) {
+                    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                }
+                
+                
+                if (value.length > 10) {
+                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                } 
+                
+                else if (value.length > 9) {
+                    value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                }
+                
+                currentContato.value.telefone = value.substring(0, 15);
+                validateTelefone();
+                };
+
+                const validateTelefone = () => {
+                const telefone = currentContato.value.telefone;
+                
+                if (!telefone) {
+                    telefoneError.value = "Telefone é obrigatório";
+                    return false;
+                }
+                
+                
+                if (!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(telefone)) {
+                    telefoneError.value = "Formato inválido. Use (xx) xxxx-xxxx ou (xx) xxxxx-xxxx";
+                    return false;
+                }
+                
+                
+                const digitos = telefone.replace(/\D/g, '').length;
+                if (digitos < 10 || digitos > 11) {
+                    telefoneError.value = "Número inválido. Deve ter 10 ou 11 dígitos (com DDD)";
+                    return false;
+                }
+                
+                telefoneError.value = "";
+                return true;
+                };
 
                 const fetchContatos = async () => {
                     try {
                         const response = await fetch("http://localhost:3000/api/contatos");
                         contatos.value = await response.json();
+                        originalContatos.value = [...contatos.value];
                     } catch (error) {
                         console.error("Erro ao buscar contatos");
+                        alert("Erro ao buscar contatos");
                     }
                 };
 
-                const addContato = async () => {
-                    if (!newContato.value.nome || !newContato.value.telefone) {
-                        alert("Preencha todos os campos!");
+                const searchContatos = async () => {
+                    if (!searchTerm.value.trim()) {
+                        contatos.value = [...originalContatos.value];
                         return;
                     }
 
                     try {
+                        const response = await fetch(`http://localhost:3000/api/contatos/search?nome=${encodeURIComponent(searchTerm.value.trim())}`);
+                        
+                        if (!response.ok) {
+                            throw new Error("Erro na busca");
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (!data.length) {
+                            alert("Nenhum contato encontrado");
+                            contatos.value = [];
+                        } else {
+                            contatos.value = data;
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar contatos:", error);
+                        alert(error.message);
+                        contatos.value = [];
+                    }
+                };
+
+                const openModal = (contato = null) => {
+                    nomeError.value = "";
+                    telefoneError.value = "";
+                    
+                    if (contato) {
+                        isEditing.value = true;
+                        currentContato.value = { ...contato };
+                    } else {
+                        isEditing.value = false;
+                        currentContato.value = { id: null, nome: "", telefone: "" };
+                    }
+                    showModal.value = true;
+                };
+
+                const addContato = async () => {
+                    if (!validateNome() || !validateTelefone()) return;
+
+                    try {
                         const response = await fetch("http://localhost:3000/api/contatos", {
                             method: "POST",
-                            headers: { 
-                                "Content-Type": "application/json" 
-                            },
+                            headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                nome: newContato.value.nome,
-                                telefone: newContato.value.telefone
+                                nome: currentContato.value.nome,
+                                telefone: currentContato.value.telefone
                             })
                         });
 
-                        if (!response.ok) throw new Error("Erro ao adicionar usuário");
+                        if (!response.ok) throw new Error("Erro ao adicionar contato");
+                        
                         fetchContatos();
-                        newContato.value = { nome: "", telefone: "" };
+                        showModal.value = false;
                     } catch (error) {
                         console.error("Erro ao adicionar contato");
                         alert("Erro ao adicionar contato");
                     }
                 };
+
+                const updateContato = async () => {
+                    if (!validateNome() || !validateTelefone()) return;
+
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/contatos/${currentContato.value.id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                nome: currentContato.value.nome,
+                                telefone: currentContato.value.telefone
+                            })
+                        });
+
+                        if (!response.ok) throw new Error("Erro ao atualizar contato");
+                        
+                        fetchContatos();
+                        showModal.value = false;
+                    } catch (error) {
+                        console.error("Erro ao atualizar contato");
+                        alert("Erro ao atualizar contato");
+                    }
+                };
+
+                const deleteContato = async (id) => {
+                    if (!confirm("Tem certeza que deseja excluir este contato?")) return;
+
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/contatos/${id}`, {
+                            method: "DELETE"
+                        });
+
+                        if (!response.ok) throw new Error("Erro ao deletar contato");
+                        
+                        fetchContatos();
+                    } catch (error) {
+                        console.error("Erro ao deletar contato");
+                        alert("Erro ao deletar contato");
+                    }
+                };
+
                 onMounted(fetchContatos);
 
-                return { contatos, newContato, addContato };
+                return { 
+                    contatos,
+                    showModal,
+                    isEditing,
+                    currentContato,
+                    nomeError,
+                    telefoneError,
+                    formIsValid,
+                    searchTerm,
+                    isDDD11,
+                    openModal,
+                    addContato,
+                    updateContato,
+                    deleteContato,
+                    validateNome,
+                    formatarTelefone,
+                    searchContatos
+                };
             }
         }).mount("#app");
     </script>

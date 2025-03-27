@@ -13,6 +13,17 @@ const getContatos = (callback) =>{
     });
 };
 
+const searchContato = (ContatoData, callback) => {
+    const query = 'SELECT * FROM contatos WHERE nome LIKE ?'
+    connection.query(query, [`%${ContatoData.nome}%`], (err, result) => {
+        if(err){
+            console.error('Erro ao buscar contato')
+            return callback(err, null)
+        }
+        callback(null, result)
+    })
+}
+
 
 const createContato = (ContatoData, callback) =>{
     const query = 'INSERT INTO contatos(nome, telefone) VALUES(?, ?)';
@@ -43,8 +54,26 @@ const updateContato = (ContatoID, ContatoData, callback) => {
     });
 };
 
+const deleteContato = (ContatoID, callback) => {
+    const query = 'DELETE FROM contatos WHERE id=?'
+    connection.query(query,[ContatoID],(err,result)=>{
+        if(err){
+            console.error('Erro ao excluir contato', err);
+            return callback(err, null)
+        }
+
+        if(result.affectedRows === 0){
+            return callback(null,null);
+        }
+
+        callback(null, {message: 'Contato deletado'})
+    })
+}
 
 module.exports = {
     getContatos,
-    createContato
+    createContato,
+    updateContato,
+    deleteContato,
+    searchContato
 };
