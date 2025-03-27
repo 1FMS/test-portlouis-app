@@ -104,7 +104,7 @@ DELETE /contatos/:id
 ```
 Remove um contato pelo ID.
 
-### Buscar um contato por nome ou telefone
+### Buscar um contato por nome
 ```
 GET /contatos/search?nome=João
 ```
