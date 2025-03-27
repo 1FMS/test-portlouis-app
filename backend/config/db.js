@@ -1,4 +1,4 @@
-require('dotenv').config({ path: 'C:\\Users\\felip\\OneDrive\\Desktop\\Teste\\backend\\.env' });
+require('dotenv').config();
 
 
 const mysql = require('mysql2'); 
